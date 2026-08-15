@@ -1,41 +1,20 @@
 class Solution {
-    bool is_safe(int row,int col,vector<string>&board,int n){
-        int row_=row;
-        int col_=col;
-        while(row>=0 && col>=0){
-            if(board[row][col]=='Q') return false;
-            row--;
-            col--;
-        }
-        row=row_;
-        col=col_;
-
-        while(col>=0){
-            if(board[row][col]=='Q') return false;
-            col--;
-        }
-         row=row_;
-        col=col_;
-
-        while(row<n &&col>=0){
-            if(board[row][col]=='Q') return false;
-            row++;
-            col--;
-        }
-        return true;
-    }
-    void solve(int col,vector<string>&board,vector<vector<string>>&ans,int n){
+    void solve(int col,int n,vector<vector<string>>&ans,vector<string>&boards,vector<int>&curr,vector<int>&ud, vector<int>&ld){
         if(col==n){
-            ans.push_back(board);
+            ans.push_back(boards);
             return;
         }
-
         for(int row=0;row<n;row++){
-            if(is_safe(row,col,board,n)){
-                board[row][col]='Q';
-                solve(col+1,board,ans,n);
-                board[row][col]='.';
-
+            if(curr[row]==0 && ud[n-1+col-row]==0 && ld[col+row]==0){
+                boards[row][col]='Q';
+                curr[row]=1;
+                ud[(n-1)+col-row]=1;
+                ld[col+row]=1;
+                solve(col+1,n,ans,boards,curr,ud,ld);
+                boards[row][col]='.';
+                curr[row]=0;
+                ud[n-1+col-row]=0;
+                ld[col+row]=0;
 
             }
         }
@@ -43,16 +22,18 @@ class Solution {
     }
 public:
     vector<vector<string>> solveNQueens(int n) {
+
         vector<vector<string>>ans;
-       string s(n,'.');
-        vector<string >board(n);
+        vector<string>boards(n);
+        string s(n,'.');
+        vector<int>curr(n,0);
+        vector<int>ud(2*n-1,0);
+        vector<int>ld(2*n-1,0);
         for(int i=0;i<n;i++){
-            board[i]=s;
-
+            boards[i]=s;
         }
-        solve(0,board,ans,n);
-        return ans;
+solve(0,n,ans,boards,curr,ud,ld);
+return ans;
 
-        
     }
 };
